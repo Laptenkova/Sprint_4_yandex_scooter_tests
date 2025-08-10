@@ -18,6 +18,7 @@ public class MainPage {
     /**
      * Локаторы кнопок вопросов
      */
+    private final By cookiesButton = By.cssSelector(".App_CookieButton__3cvqF");
     private final By costQuestionButton = By.id("accordion__heading-0");
     private final By multipleScootersQuestionButton = By.id("accordion__heading-1");
     private final By rentalTimeQuestionButton = By.id("accordion__heading-2");
@@ -56,6 +57,13 @@ public class MainPage {
     public MainPage(WebDriver driver) {
         this.driver = driver;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+    }
+
+    /**
+     * Кликает на кнопку "Принять куки" для перехода ко второй странице заказа
+     */
+    public void clickCookiesAccept() {
+        wait.until(ExpectedConditions.elementToBeClickable(cookiesButton)).click();
     }
 
     /**
@@ -240,15 +248,19 @@ public class MainPage {
      * Методы для кнопки "Заказать".
      * Кликает на кнопку "Заказать вверху"
      */
-    public void clickTopOrderButton() {
+    public OrderPage clickTopOrderButton() {
         wait.until(ExpectedConditions.elementToBeClickable(orderButtonTop)).click();
+
+        return new OrderPage(driver);
     }
 
     /**
      * Кликает на кнопку "Заказать" в середине страницы(после вопросов).
      */
-    public void clickBottomOrderButton() {
+    public OrderPage clickBottomOrderButton() {
         wait.until(ExpectedConditions.elementToBeClickable(orderButtonBottom)).click();
+
+        return new OrderPage(driver);
     }
 }
 

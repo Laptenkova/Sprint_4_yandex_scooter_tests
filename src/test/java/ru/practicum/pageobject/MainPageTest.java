@@ -57,7 +57,7 @@ public class MainPageTest {
     public void shouldShowsMultipleScootersAnswer() {
         /**
          * 2. Раскрывает вопрос "Хочу сразу несколько самокатов! Так можно?"
-         * /
+         */
          mainPage.expandMultipleScootersQuestion();
 
          /**
