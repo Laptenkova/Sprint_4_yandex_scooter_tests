@@ -7,18 +7,26 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 
 import java.time.Duration;
 
+import static ru.practicum.utils.DriverConfig.*;
+
 /**
- * Класс для создания и настройки объектов WebDriver для браузеров Chrome и Firefox.
+ * Класс для создания и управления экземплярами WebDriver.
+ * Класс используется как JUnit @Rule и обеспечивает запуск браузера перед тестом
+ * и корректное завершение после выполнения.
  */
 public class DriverFactory extends ExternalResource {
-
     private WebDriver driver;
 
+    /**
+     * Инициализирует WebDriver в зависимости от системного свойства "browser".
+     * Поддерживаемые браузеры: chrome (по умолчанию), firefox.
+     *
+     * @return инициализированный WebDriver
+     */
     public WebDriver initializeDriver() {
+        String browser = System.getProperty(BROWSER, DEFAULT_BROWSER);
 
-        String browser = System.getProperty("browser", "chrome");
-
-        if ("firefox".equalsIgnoreCase(browser)) {
+        if (FIREFOX_BROWSER.equalsIgnoreCase(browser)) {
             startFirefox();
         } else {
             startChrome();
@@ -26,38 +34,47 @@ public class DriverFactory extends ExternalResource {
 
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
         driver.manage().window().maximize();
-        driver.get("https://qa-scooter.praktikum-services.ru/");
+        driver.get(BASE_URL);
 
         return driver;
     }
 
     /**
-     * Возвращает текущий активный WebDriver.
-     * Используется в тестах для получения уже инициализированного драйвера без открытия нового окна.
+     * Возвращает текущий активный экземпляр WebDriver.
+     *
+     * @return WebDriver
      */
     public WebDriver getDriver() {
         return driver;
     }
 
+    /**
+     * Вызывается перед началом выполнения каждого теста.
+     * Выполняет инициализацию WebDriver.
+     */
     @Override
     protected void before() {
         initializeDriver();
     }
 
+    /**
+     * Вызывается после выполнения теста.
+     * Завершает работу драйвера и закрывает браузер.
+     */
     @Override
     protected void after() {
         driver.quit();
     }
 
     /**
-     * Метод для запуска драйвера Chrome
+     * Запускает ChromeDriver
      */
     private void startChrome() {
         driver = new ChromeDriver();
     }
 
     /**
-     * Метод для запуска драйвера Firefox
+     * Запускает FirefoxDriver
      */
     private void startFirefox() {
         driver = new FirefoxDriver();

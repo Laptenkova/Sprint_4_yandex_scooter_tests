@@ -1,0 +1,1 @@
+Запуск приложения в браузере Firefox осуществляется командой mvn clean test -Dbrowser=firefox
