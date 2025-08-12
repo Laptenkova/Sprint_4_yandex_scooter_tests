@@ -3,19 +3,41 @@ package ru.practicum.pageobject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import ru.practicum.factory.DriverFactory;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import static org.junit.Assert.assertTrue;
+import static ru.practicum.constants.FaqAnswers.*;
 
 /**
  * Тесты для страницы MainPage.
  * Проверяет корректность раскрытия вопросов и отображения ответов в разделе "Вопросы о важном"
  */
+@RunWith(Parameterized.class)
 public class MainPageTest {
+
+    private static final String ACCORDION_HEADING = "accordion__heading-%s";
 
     private WebDriver driver;
     private MainPage mainPage;
+
+    /**
+     * Параметр: идентификатор вопроса
+     */
+    @Parameterized.Parameter
+    public String questionId;
+
+    /**
+     * Параметр: ожидаемый текст ответа, соответствующий вопросу
+     */
+    @Parameterized.Parameter(1)
+    public String expectedAnswer;
 
     /**
      * Инициализирует WebDriver и создаёт объект MainPage перед выполнением каждого теста
@@ -24,7 +46,6 @@ public class MainPageTest {
     public void setUp() {
         DriverFactory driverFactory = new DriverFactory();
         driver = driverFactory.initializeDriver();
-
         mainPage = new MainPage(driver);
     }
 
@@ -37,92 +58,36 @@ public class MainPageTest {
     }
 
     /**
-     * Проверяет, что при раскрытии вопроса "Сколько это стоит? И как оплатить?"
-     * отображается ожидаемый текст ответа
+     * Набор параметров с данными тестов:
+     * пары - "идентификатор вопроса" и "ожидаемый ответ" на вопрос
+     *
+     * @return коллекция данных для параметризованных тестов
      */
-    @Test
-    public void shouldShowsCostAnswer() {
-        mainPage.expandCostQuestion();
-        String answer = mainPage.getCostAndPaymentAnswer();
-        assertTrue(answer.contains("Сутки — 400 рублей. Оплата курьеру — наличными или картой."));
+    @Parameterized.Parameters(name = "Ожидаемый ответ - {1}")
+    public static Collection<Object[]> testData() {
+        return Arrays.asList(new Object[][]{
+                {"0", COST_ANSWER},
+                {"1", MULTIPLE_SCOOTERS_ANSWER},
+                {"2", RENTAL_TIME_ANSWER},
+                {"3", TODAY_ORDER_ANSWER},
+                {"4", EXTENSION_ANSWER},
+                {"5", CHARGING_ANSWER},
+                {"6", CANCELLATION_ANSWER},
+                {"7", DELIVERY_BOUNDS_ANSWER}
+        });
     }
 
     /**
-     * Проверяет, что при раскрытии вопроса "Хочу сразу несколько самокатов! Так можно?"
-     * отображается ожидаемый текст ответа
-     */
-    @Test
-    public void shouldShowsMultipleScootersAnswer() {
-        mainPage.expandMultipleScootersQuestion();
-        String answer = mainPage.getMultiScootersAllowedAnswer();
-        assertTrue(answer.contains("Пока что у нас так: один заказ — один самокат. Если хотите покататься с друзьями, можете просто сделать несколько заказов — один за другим."));
-    }
-
-    /**
-     * Проверяет, что при раскрытии вопроса "Как рассчитывается время аренды?"
+     * Проверяет, что при раскрытии вопросов из параметров
      * отображается корректное разъяснение
      */
     @Test
-    public void shouldShowRentalTimeAnswer() {
-        mainPage.expandRentalTimeQuestion();
-        String answer = mainPage.getRentalTimeAnswer();
-        assertTrue(answer.contains("Допустим, вы оформляете заказ на 8 мая. Мы привозим самокат 8 мая в течение дня. Отсчёт времени аренды начинается с момента, когда вы оплатите заказ курьеру. Если мы привезли самокат 8 мая в 20:30, суточная аренда закончится 9 мая в 20:30."));
-    }
-
-    /**
-     * Проверяет, что при раскрытии вопроса "Можно ли заказать самокат прямо на сегодня?"
-     * отображается информация о невозможности заказа на сегодня.
-     */
-    @Test
-    public void shouldShowTodayOrderAnswer() {
-        mainPage.expandTodayOrderQuestion();
-        String answer = mainPage.getTodayOrderAnswer();
-        assertTrue(answer.contains("Только начиная с завтрашнего дня. Но скоро станем расторопнее."));
-    }
-
-    /**
-     * Проверяет, что при раскрытии вопроса "Можно ли продлить заказ или вернуть самокат раньше?"
-     * отображается корректная информация о невозможности продления.
-     */
-    @Test
-    public void shouldShowRentalExtensionAnswer() {
-        mainPage.expandRentalExtensionQuestion();
-        String answer = mainPage.getRentalExtensionAnswer();
-        assertTrue(answer.contains("Пока что нет! Но если что-то срочное — всегда можно позвонить в поддержку по красивому номеру 1010."));
-    }
-
-    /**
-     * Проверяет, что при раскрытии вопроса "Вы привозите зарядку вместе с самокатом?"
-     * отображается информация о полной зарядке при доставке.
-     */
-    @Test
-    public void shouldShowChargingOptionAnswer() {
-        mainPage.expandChargingOptionQuestion();
-        String answer = mainPage.getChargingOptionAnswer();
-        assertTrue(answer.contains("Самокат приезжает к вам с полной зарядкой. Этого хватает на восемь суток — даже если будете кататься без передышек и во сне. Зарядка не понадобится."));
-    }
-
-
-    /**
-     * Проверяет, что при раскрытии вопроса "Можно ли отменить заказ?"
-     * отображается информация о возможности отмены без штрафа.
-     */
-    @Test
-    public void shouldShowCancellationPolicyAnswer() {
-        mainPage.expandCancellationPolicyQuestion();
-        String answer = mainPage.getCancellationPolicyAnswer();
-        assertTrue(answer.contains("Да, пока самокат не привезли. Штрафа не будет, объяснительной записки тоже не попросим. Все же свои."));
-    }
-
-    /**
-     * Проверяет, что при раскрытии вопроса "Я живу за МКАДом, привезете?"
-     * отображается информация о покрытии доставки.
-     */
-    @Test
-    public void shoudShowDeliveryBoundsAnswer() {
-        mainPage.expandDeliveryBoundsQuestion();
-        String answer = mainPage.getDeliveryBoundsAnswer();
-        assertTrue(answer.contains("Да, обязательно. Всем самокатов! И Москве, и Московской области."));
+    public void shouldDisplayCorrectAnswerTest() {
+        mainPage.clickCookiesAccept();
+        By questionLocator = By.id(String.format(ACCORDION_HEADING, questionId));
+        mainPage.clickQuestion(questionLocator);
+        String actualAnswer = mainPage.getAnswerText(questionId);
+        assertTrue(actualAnswer.contains(expectedAnswer));
     }
 }
 

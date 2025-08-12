@@ -6,12 +6,9 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import ru.practicum.constants.OrderPageConstants;
 
 import java.time.Duration;
 
-import static ru.practicum.constants.OrderPageConstants.DURATION_DROPDOWN_CSS;
-import static ru.practicum.constants.OrderPageConstants.RENT_DURATION_OPTION_XPATH_TEMPLATE;
 import static ru.practicum.constants.TimeOutConstants.WAIT_TIMEOUT_SECONDS;
 
 /**
@@ -25,22 +22,26 @@ public class OrderPage {
     private WebDriverWait wait;
 
     // Локаторы элементов
-    private final By nameField = By.cssSelector(OrderPageConstants.NAME_FIELD_CSS);
-    private final By surnameField = By.cssSelector(OrderPageConstants.SURNAME_FIELD_CSS);
-    private final By addressField = By.cssSelector(OrderPageConstants.ADDRESS_FIELD_CSS);
-    private final By metroField = By.cssSelector(OrderPageConstants.METRO_FIELD_INPUT_CSS);
-    private final By metroFieldFirstOption = By.cssSelector(OrderPageConstants.METRO_FIELD_OPTION_CSS);
-    private final By phoneField = By.cssSelector(OrderPageConstants.PHONE_FIELD_CSS);
-    private final By cookiesButton = By.cssSelector(OrderPageConstants.COOKIES_BUTTON_CSS);
-    private final By nextButton = By.cssSelector(OrderPageConstants.NEXT_BUTTON_CSS);
-    private final By dateField = By.cssSelector(OrderPageConstants.DATE_FIELD_CSS);
-    private final By rentDropdownPlaceholder = By.cssSelector(DURATION_DROPDOWN_CSS);
-    private final By colorCheckbox = By.cssSelector(OrderPageConstants.COLOR_CHECKBOX_CSS);
-    private final By commentField = By.cssSelector(OrderPageConstants.COMMENT_FIELD_CSS);
-    private final By orderButton = By.xpath(OrderPageConstants.ORDER_BUTTON_XPATH);
-    private final By modalWindow = By.cssSelector(OrderPageConstants.MODAL_WINDOW_CSS);
-    private final By confirmButton = By.xpath(OrderPageConstants.CONFIRM_BUTTON_XPATH);
-    private final By statusButton = By.xpath(OrderPageConstants.STATUS_BUTTON_XPATH);
+    private final By nameField = By.cssSelector("[placeholder='* Имя']");
+    private final By surnameField = By.cssSelector("[placeholder='* Фамилия']");
+    private final By addressField = By.cssSelector("[placeholder='* Адрес: куда привезти заказ']");
+    private final By metroField = By.cssSelector(".select-search__input");
+    private final By metroFieldFirstOption = By.cssSelector(".select-search__option");
+    private final By phoneField = By.cssSelector("[placeholder='* Телефон: на него позвонит курьер']");
+    private final By nextButton = By.cssSelector(".Button_Middle__1CSJM");
+    private final By dateField = By.cssSelector("[placeholder='* Когда привезти самокат']");
+    private final By rentDropdownPlaceholder = By.cssSelector("div.Dropdown-placeholder");
+    private final By colorCheckboxBlack = By.cssSelector("input#black");
+    private final By colorCheckboxGrey = By.cssSelector("input#grey");
+    private final By commentField = By.cssSelector("[placeholder='Комментарий для курьера']");
+    private final By orderButton = By.xpath("//div[@class='Order_Buttons__1xGrp']/button[2]");
+    private final By modalWindow = By.cssSelector("div.Order_Modal__YZ-d3");
+    private final By confirmButton = By.xpath("//button[text()='Да']");
+    private final By statusButton = By.xpath("//button[text()='Посмотреть статус']");
+
+    // Шаблон для выбора срока аренды
+    private static final String RENT_DURATION_OPTION_XPATH_TEMPLATE =
+            "//div[contains(@class, 'Dropdown-option') and text()='%s']";
 
     /**
      * Инициализирует новый экземпляр страницы оформления заказа
@@ -73,7 +74,7 @@ public class OrderPage {
     /**
      * Заполняет поле "Адрес: куда привезти заказ" указанным значением
      *
-     *  @param address Адрес для ввода
+     * @param address Адрес для ввода
      */
     public void enterAddress(String address) {
         wait.until(ExpectedConditions.elementToBeClickable(addressField)).sendKeys(address);
@@ -99,13 +100,6 @@ public class OrderPage {
      */
     public void enterPhone(String phone) {
         wait.until(ExpectedConditions.elementToBeClickable(phoneField)).sendKeys(phone);
-    }
-
-    /**
-     * Кликает на кнопку "Принять куки"
-     */
-    public void clickCookiesAccept() {
-        wait.until(ExpectedConditions.elementToBeClickable(cookiesButton)).click();
     }
 
     /**
@@ -141,14 +135,18 @@ public class OrderPage {
     }
 
     /**
-     * Устанавливает состояние выбора цвета "Чёрный жемчуг"
+     * Устанавливает выбор цвета самоката: "Чёрный жемчуг" или "Серый".
+     * Гарантирует кликабельность элементов перед взаимодействием.
      *
-     * @param shouldBeSelected true - выбрать цвет, false - отменить выбор
+     * @param shouldBeSelected true - выбрать "Чёрный жемчуг", false - выбрать "Серый"
      */
     public void setBlackPearlSelection(boolean shouldBeSelected) {
-        WebElement checkbox = wait.until(ExpectedConditions.elementToBeClickable(colorCheckbox));
-        if (checkbox.isSelected() != shouldBeSelected) {
-            checkbox.click();
+        WebElement checkBoxBlack = wait.until(ExpectedConditions.elementToBeClickable(colorCheckboxBlack));
+        WebElement checkBoxGrey = wait.until(ExpectedConditions.elementToBeClickable(colorCheckboxGrey));
+        if (checkBoxBlack.isSelected() != shouldBeSelected) {
+            checkBoxBlack.click();
+        } else {
+            checkBoxGrey.click();
         }
     }
 
