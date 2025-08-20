@@ -12,7 +12,7 @@ import ru.practicum.factory.DriverFactory;
 import java.util.Arrays;
 import java.util.Collection;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static ru.practicum.constants.FaqAnswers.*;
 
 /**
@@ -87,7 +87,7 @@ public class MainPageTest {
         By questionLocator = By.id(String.format(ACCORDION_HEADING, questionId));
         mainPage.clickQuestion(questionLocator);
         String actualAnswer = mainPage.getAnswerText(questionId);
-        assertTrue(actualAnswer.contains(expectedAnswer));
+        assertEquals(expectedAnswer, actualAnswer);
     }
 }
 

@@ -13,15 +13,16 @@ import static ru.practicum.constants.TimeOutConstants.WAIT_TIMEOUT_SECONDS;
  * Содержит методы для взаимодействия с вопросами и кнопками заказа
  */
 public class MainPage {
+
+    //Шаблон ID панели ответа в аккордеоне.
+    //Используется для динамического получения локатора ответа по индексу вопроса.
+    private static final String ACCORDION_PANEL = "accordion__panel-%s";
+
     private WebDriver driver;
     private WebDriverWait wait;
 
     // Локатор вопросов
     private final By cookiesButton = By.cssSelector(".App_CookieButton__3cvqF");
-
-    //Шаблон ID панели ответа в аккордеоне.
-    //Используется для динамического получения локатора ответа по индексу вопроса.
-    private final String ACCORDION_PANEL = "accordion__panel-%s";
 
     // Локаторы кнопок заказа
     private final By orderButtonTop = By.cssSelector("div.Header_Nav__AGCXC > button.Button_Button__ra12g");
